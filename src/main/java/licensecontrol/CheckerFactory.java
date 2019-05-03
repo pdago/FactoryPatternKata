@@ -9,6 +9,6 @@ public class CheckerFactory {
             return new CheckerHardware();
         }
 
-        return null;
+        throw new RuntimeException("The requested license type does not exist");
     }
 }
