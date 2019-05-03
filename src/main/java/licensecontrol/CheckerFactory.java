@@ -1,14 +1,17 @@
 package licensecontrol;
 
-public class CheckerFactory {
-    public static Checker create_checker(LicenseData.Type type) {
-        if (type == LicenseData.Type.HARDWARE_NOCHECK) {
-            return new CheckerNoHardware();
-        }
-        else if ((type == LicenseData.Type.HARDWARE_CHECK)) {
-            return new CheckerHardware();
-        }
+import java.util.HashMap;
+import java.util.concurrent.Callable;
 
-        throw new RuntimeException("The requested license type does not exist");
+public class CheckerFactory {
+    private static HashMap<LicenseData.Type, Callable<Checker>> checker_creators = new HashMap<LicenseData.Type, Callable<Checker>>() {
+        {
+            put(LicenseData.Type.HARDWARE_NOCHECK, () -> new CheckerNoHardware());
+            put(LicenseData.Type.HARDWARE_CHECK, () -> new CheckerHardware());
+        }
+    };
+
+    public static Checker create_checker(LicenseData.Type type) throws Exception {
+        return checker_creators.get(type).call();
     }
 }
